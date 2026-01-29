@@ -1,14 +1,10 @@
 package com.javanauta.agendadortarefas.infrastructure.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.javanauta.agendadortarefas.infrastructure.enums.StatusNotificacaoEnum;
 import lombok.*;
-import org.springframework.cloud.openfeign.support.JsonFormWriter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.stereotype.Component;
 
-import java.text.Format;
 import java.time.LocalDateTime;
 
 @Getter

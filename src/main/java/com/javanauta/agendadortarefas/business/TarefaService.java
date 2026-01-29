@@ -2,8 +2,10 @@ package com.javanauta.agendadortarefas.business;
 
 import com.javanauta.agendadortarefas.business.dto.TarefaDTO;
 import com.javanauta.agendadortarefas.business.mapper.TarefaConverter;
+import com.javanauta.agendadortarefas.business.mapper.TarefaUpdateConverter;
 import com.javanauta.agendadortarefas.infrastructure.entity.TarefaEntity;
 import com.javanauta.agendadortarefas.infrastructure.enums.StatusNotificacaoEnum;
+import com.javanauta.agendadortarefas.infrastructure.exceptions.ResourceNotFound;
 import com.javanauta.agendadortarefas.infrastructure.repository.TarefasRepository;
 import com.javanauta.agendadortarefas.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class TarefaService {
 
     public final TarefasRepository repository;
     public final TarefaConverter tarefaConverter;
+    public final TarefaUpdateConverter tarefaUpdateConverter;
     public final JwtUtil jwtUtil;
 
     public TarefaDTO gravarTarefa (TarefaDTO tarefaDTO, String token) {
@@ -42,5 +45,38 @@ public class TarefaService {
         List<TarefaEntity> lista = repository.findByEmailUsuario(email);
 
         return tarefaConverter.paraListaTarefaDto(lista);
+    }
+
+    public void deletarTarefaPorId(String id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFound("id não encontrado " + id);
+        }
+        repository.deleteById(id);
+    }
+
+    public TarefaDTO alterarStatus (StatusNotificacaoEnum status, String id) {
+        try {
+            TarefaEntity tarefaEntity = repository.findById(id).orElseThrow(
+                    ()-> new ResourceNotFound("id não encontrado " + id));
+            tarefaEntity.setStatusNotificacaoEnum(status);
+
+                return tarefaConverter.paraTarefaDTO(repository.save(tarefaEntity));
+        } catch (ResourceNotFound e) {
+            throw new ResourceNotFound("id não encontrado " + id, e.getCause());
+        }
+    }
+
+    public TarefaDTO alterarTarefa (TarefaDTO tarefaDTO, String id) {
+        try {
+            TarefaEntity tarefaEntity = repository.findById(id).orElseThrow(
+                    ()-> new ResourceNotFound("id não encontrado" + id));
+
+            tarefaUpdateConverter.updateTarefa(tarefaEntity, tarefaDTO);
+            //  repository.save(tarefaEntity);  Jeito simples
+                return tarefaConverter.paraTarefaDTO(repository.save(tarefaEntity));
+
+        }   catch (ResourceNotFound e) {
+            throw new ResourceNotFound("id não encontrado " + id, e.getCause());
+        }
     }
 }
