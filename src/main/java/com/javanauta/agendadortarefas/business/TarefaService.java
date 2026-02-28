@@ -24,7 +24,7 @@ public class TarefaService {
     public final JwtUtil jwtUtil;
 
     public TarefaDTO gravarTarefa (TarefaDTO tarefaDTO, String token) {
-        String email = jwtUtil.extrairEmailToken(token.substring(7));
+        String email = extracaoEmail(token);
 
         tarefaDTO.setDataCriacao(LocalDateTime.now());
         tarefaDTO.setStatusNotificacaoEnum(StatusNotificacaoEnum.PENDENTE);
@@ -42,7 +42,8 @@ public class TarefaService {
     }
 
     public List<TarefaDTO> buscarTarefaGravadaPorEmail(String token) {
-        String email = jwtUtil.extrairEmailToken(token.substring(7));
+        String email = extracaoEmail(token);
+
         List<TarefaEntity> lista = repository.findByEmailUsuario(email);
 
         return tarefaConverter.paraListaTarefaDto(lista);
@@ -79,5 +80,9 @@ public class TarefaService {
         }   catch (ResourceNotFound e) {
             throw new ResourceNotFound("id não encontrado " + id, e.getCause());
         }
+    }
+
+    public String extracaoEmail (String token) {
+        return jwtUtil.extrairEmailToken(token.substring(7));
     }
 }
