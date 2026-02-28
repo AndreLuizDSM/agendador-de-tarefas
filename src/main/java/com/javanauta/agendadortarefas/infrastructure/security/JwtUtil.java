@@ -13,12 +13,12 @@ import java.util.Date;
 public class JwtUtil {
 
     // Chave secreta usada para assinar e verificar tokens JWT
-    private final String secretKey = "sua-chave-secreta-super-segura-que-deve-ser-bem-longa";
+    private static final String SECRETKEY = "sua-chave-secreta-super-segura-que-deve-ser-bem-longa";
 
     // Extrai as claims do token JWT (informações adicionais do token)
     public Claims extractClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8))) // Define a chave secreta para validar a assinatura do token
+                .setSigningKey(Keys.hmacShaKeyFor(SECRETKEY.getBytes(StandardCharsets.UTF_8))) // Define a chave secreta para validar a assinatura do token
                 .build()
                 .parseClaimsJws(token) // Analisa o token JWT e obtém as claims
                 .getBody(); // Retorna o corpo das claims
